@@ -13,6 +13,7 @@ s.listen(5)
 print('listening on', addr)
 
 file_pat = re.compile('GET\\s+/(\\S*)\\s+')
+file_ext = re.compile('^\\w+.([a-zA-Z]+)$')
 
 while True:
     conn, addr = s.accept()
@@ -21,12 +22,15 @@ while True:
     request = request.decode('utf-8')
     print('Content = \n%s' % request)
     file_req = file_pat.match(request).group(1)
+    ext = file_ext.match(file_req).group(1)
     if(file_req == ''):
         print('Client requested root\n')
         response = open('demo_server.html', 'rb').read()
     else:
         print('client requested: %s' % file_req)
         response = open(file_req, 'rb').read()
+    if(ext == 'html'):
+        
     conn.send('HTTP/1.1 200 OK\n')
     conn.send('Content-Type: text\n')
     conn.send('Connection: close\n\n')
